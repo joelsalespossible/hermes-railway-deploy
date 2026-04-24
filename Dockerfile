@@ -8,7 +8,7 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Install uv for fast dependency resolution
-RUN pip install uv && ln -sf /root/.local/bin/uv /usr/local/bin/uv
+RUN pip install --break-system-packages uv && ln -sf /root/.local/bin/uv /usr/local/bin/uv
 
 # Clone and install Hermes
 RUN git clone --depth 1 https://github.com/NousResearch/hermes-agent.git /opt/hermes
