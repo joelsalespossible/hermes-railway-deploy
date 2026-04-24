@@ -7,13 +7,16 @@ RUN apt-get update && \
         ripgrep ffmpeg gcc python3-dev libffi-dev git curl ca-certificates && \
     rm -rf /var/lib/apt/lists/*
 
+# Install uv for fast dependency resolution
+RUN pip install uv && ln -sf /root/.local/bin/uv /usr/local/bin/uv
+
 # Clone and install Hermes
 RUN git clone --depth 1 https://github.com/NousResearch/hermes-agent.git /opt/hermes
 
 WORKDIR /opt/hermes
 
-# Install Python and Node dependencies
-RUN pip install --no-cache-dir -e ".[all]" --break-system-packages && \
+# Install Python and Node dependencies using uv (much faster resolver)
+RUN uv pip install --system -e ".[all]" --break-system-packages && \
     npm install --prefer-offline --no-audit && \
     npm cache clean --force
 
