@@ -8,7 +8,8 @@ RUN apt-get update && \
     rm -rf /var/lib/apt/lists/*
 
 # Install uv for fast dependency resolution
-RUN pip install --break-system-packages uv && ln -sf /root/.local/bin/uv /usr/local/bin/uv
+RUN pip install --break-system-packages uv && \
+    ln -sf /root/.local/bin/uv /usr/local/bin/uv
 
 # Clone and install Hermes
 RUN git clone --depth 1 https://github.com/NousResearch/hermes-agent.git /opt/hermes
@@ -16,7 +17,10 @@ RUN git clone --depth 1 https://github.com/NousResearch/hermes-agent.git /opt/he
 WORKDIR /opt/hermes
 
 # Install Python and Node dependencies using uv (much faster resolver)
-RUN uv pip install --system -e ".[all]" --break-system-packages && \
+# Must set PATH to include /root/.local/bin where uv is installed
+ENV PATH=/root/.local/bin:/usr/local/bin:/usr/bin:/bin
+
+RUN /root/.local/bin/uv pip install --system -e ".[all]" --break-system-packages && \
     npm install --prefer-offline --no-audit && \
     npm cache clean --force
 
